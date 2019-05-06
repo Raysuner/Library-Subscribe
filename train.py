@@ -1,49 +1,72 @@
 import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.image as img
 from PIL import Image
+from sklearn import metrics
 import os
+import keras
+import tensorflow as tf
+
+class_name = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
 
 
-def capt_inference(sub_capt):
-    capt = Image.open(sub_capt)
-    char_array = np.array(capt)
-    print(char_array)
-    total_pixels = np.sum(char_array)
-    cols_pixels = np.sum(char_array, 0)
-    rows_pixels = np.sum(char_array, 1)
-    char_features = np.append(cols_pixels, rows_pixels)
-    char_features = np.append(total_pixels, char_features)
-    return char_features.tolist()
+def load_data(dir_path):
+    x, y = None, None
+    for i in range(len(class_name)):
+        train_path = dir_path + class_name[i]
+        files = os.listdir(train_path)
+        for file in files:
+            fullpath = os.path.join(train_path, file)
+            im = Image.open(fullpath)
+            im = im.convert('L')
+            # print('++++++++++++')
+            # print(im.size)
+            im = Image.fromarray(np.uint8(im))
+            im = np.array(im)
+            # print('-----------')
+            # print(im.shape)
+            im = (np.expand_dims(im, 0))
+            # print('*****************')
+            # print(im.shape)
 
+            if x is None:
+                x = im
+            else:
+                x = np.vstack((x, im))
+            if y is None:
+                y = i
+            else:
+                y = np.vstack((y, i))
+    return x, y
 
-def train(train_path):
-    files = os.listdir(train_path)
-    train_table = []
-    train_label = []
-    for file in files:
-        train_label += list(file.split('_')[0])
-        char_features = capt_inference(train_path + file)
-        train_table.append(char_features)
-    return train_table, train_label
-
-
-def nnc(train_tabel, test_vec, train_label):
-    dist_mat = np.square(np.subtract(train_tabel, test_vec))
-    dist_vec = np.sum(dist_mat, axis=1)
-    pos = np.argmin(dist_vec)
-    return train_label[pos]
-
-def test(train_path):
-    test_label = []
-    train_tabel, train_label = train(train_path)
-    files = os.listdir(train_path)
-    for file in files:
-        char_features = capt_inference(train_path + file)
-        label = nnc(train_tabel, char_features, train_label)
-        test_label.append(label)      
-    test_label = "".join(test_label)
-    return test_label
 
 if __name__ == '__main__':
-    train_path = './project/Subscribe/train/'
-    res = test(train_path)
-    print(res)
+    epoch = 500
+    print('start loading data')
+    train_dir = './project/Subscribe/dataset/train/'
+    test_dir = './project/Subscribe/dataset/test/'
+
+    train_capt, train_label = load_data(train_dir)
+    print(train_capt.shape, train_label.shape)
+    test_capt, test_label = load_data(test_dir)
+    print(test_capt.shape, test_label.shape)
+
+    print('start building model')
+    model = keras.Sequential([
+        keras.layers.Flatten(input_shape=(16,16)),
+        keras.layers.Dense(512, activation=tf.nn.relu),
+        keras.layers.Dropout(0.4, noise_shape=None, seed=None),
+        keras.layers.Dense(10, activation=tf.nn.softmax),
+    ])
+    model.summary()
+    model.compile(optimizer=tf.train.AdadeltaOptimizer(),
+                  loss='sparse_categorical_crossentropy',
+                  metrics=['accuracy'])
+
+    print('strat training')
+    hist = model.fit(train_capt, train_label, epochs=epoch, shuffle=True)
+
+    print('get accuracy')
+    test_loss, test_acc = model.evaluate(test_capt, test_label)
+    print('Test Accuracy', test_acc)
+    model.save('./project/Subscribe/model.cy')

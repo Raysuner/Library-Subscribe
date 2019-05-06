@@ -7,11 +7,15 @@
 @LastEditors: Raysuner
 @Email: 17775306795@163.com
 @Date: 2019-04-26 18:55:07
-@LastEditTime: 2019-04-30 17:41:47
+@LastEditTime: 2019-05-06 14:20:12
 '''
 """
 批量处理文件
 """
+
+captcha_path = './project/Subscribe/images/'
+temp_cap_path = './project/Subscribe/temp/'
+train_path = './project/Subscribe/train/'
 
 import os
 from PIL import Image
@@ -218,9 +222,6 @@ def do_split(source_image, starts, filter_ends):
 
 
 if __name__ == '__main__':
-    captcha_path = './project/Subscribe/images/'
-    temp_cap_path = './project/Subscribe/temp/'
-    train_path = './project/Subscribe/train/'
     capt_process(captcha_path, temp_cap_path)
     capt_process(temp_cap_path, train_path)
         

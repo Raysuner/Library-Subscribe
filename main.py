@@ -7,7 +7,7 @@
 @LastEditors: Raysuner
 @Email: 17775306795@163.com
 @Date: 2019-04-17 21:55:08
-@LastEditTime: 2019-04-30 14:31:55
+@LastEditTime: 2019-05-06 14:28:12
 '''
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -38,11 +38,6 @@ class Subscribe:
         self.verify_number = ''               
         self.email = '17775306795@163.com'
 
-        # self.APP_ID = '14342532'
-        # self.API_KEY = 'xd6f1nFrdEhdnIN49QiGlqYD'
-        # self.SECRET_KEY = '3sSLmNpX5r0CdwMYA6b5QGlisbA9R3gS'
-        # self.client = AipOcr(self.APP_ID, self.API_KEY, self.SECRET_KEY)      
-        
     def push(self):
         self.elem_user.send_keys("15205150438")
         self.elem_pwd.send_keys("227278")
