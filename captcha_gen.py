@@ -1,3 +1,14 @@
+#!/usr/bin/env python
+# coding=UTF-8
+'''
+@Description: 
+@Author: Raysuner
+@Github: https://github.com/Raysuner
+@LastEditors: Raysuner
+@Email: 17775306795@163.com
+@Date: 2019-05-04 22:07:01
+@LastEditTime: 2019-05-07 20:30:33
+'''
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 import datetime
@@ -32,7 +43,7 @@ class Captcha:
 
 
 if __name__ == '__main__':
-    for i in range(580, 1000):
+    for i in range(1, 1001):
         filename = str(i) + '.png'
         Captcha().main(filename)
 

@@ -7,16 +7,16 @@
 @LastEditors: Raysuner
 @Email: 17775306795@163.com
 @Date: 2019-04-17 21:55:08
-@LastEditTime: 2019-05-06 14:28:12
+@LastEditTime: 2019-05-07 20:32:18
 '''
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 import datetime
 import time
-from PIL import Image
-import numpy as np
 import os
-from image_process import capt_process
+from PIL import Image
+import captcha_process
+import keras
 
 class Subscribe:
     def __init__(self):
@@ -37,6 +37,52 @@ class Subscribe:
 
         self.verify_number = ''               
         self.email = '17775306795@163.com'
+    
+    def resize(self, fullpath):
+        im = Image.open(fullpath)
+        im = im.resize((8, 48))
+        region = im.copy()
+        gray_img = Image.new('RGB', (28, 28), (255, 255, 255))
+        gray_img.paste(region, (10, -5))
+        gray_img.save(fullpath)
+
+    def image_process(self):
+        screen_path = './project/Subscribe/'
+        captcha_path = './project/Subscribe/'
+        sub_captcha_path = './project/Subscribe/img/'
+        model_path = './project/Subscribe/model.cy'
+        self.driver.get_screenshot_as_file(screen_path + 'screen.png')
+        img = Image.open(screen_path + 'screen.png')
+        box = (659, 380, 738, 428)
+        image = img.crop(box)
+        image.save(captcha_path + 'cptacha.png')
+        capt_img = Image.open(captcha_path + 'cptacha.png')
+        gray_img = captcha_process.rgb2gray(capt_img)
+        bin_img = captcha_process.binarizing(gray_img)
+        boxs = captcha_process.vertical(bin_img)
+        cnt = 1
+        for subbox in boxs:
+            subbox = (subbox[0], 0, subbox[1], 48)
+            img = bin_img.crop(subbox)
+            width = img.size[0] 
+            if width >= 15:
+                mid = img.size[0] // 2 + 1
+                print('mid = %d' % mid)
+                img1 = img.crop((0, 0, mid, 48))
+                img1.save(sub_captcha_path + str(cnt) + '.png')
+                cnt += 1
+                img2 = img.crop((mid, 0, width, 48))
+                img2.save(sub_captcha_path + str(cnt) + '.png')
+                cnt += 1
+            else:
+                img.save(sub_captcha_path + str(cnt) + '.png')
+                cnt += 1
+        files = os.listdir(sub_captcha_path)
+        for file in files:
+            fullpath = sub_captcha_path + file
+            self.resize(fullpath)
+            keras.models.load_model(model_path)
+
 
     def push(self):
         self.elem_user.send_keys("15205150438")
@@ -53,7 +99,7 @@ class Subscribe:
         self.driver.quit()
 
     def main(self):
-        capt_process()
+        self.image_process()
         self.push()
 
     #def send_email(self):               
