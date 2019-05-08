@@ -7,7 +7,7 @@
 @LastEditors: Raysuner
 @Email: 17775306795@163.com
 @Date: 2019-05-07 19:57:06
-@LastEditTime: 2019-05-08 22:50:40
+@LastEditTime: 2019-05-08 23:19:27
 '''
 import numpy as np
 import matplotlib.pyplot as plt
@@ -109,10 +109,3 @@ if __name__ == '__main__':
     print('Test Loss: ', test_loss)
     print('Test Accuracy: ', test_acc)
     model.save('./project/Subscribe/model.cy')
-    predict = model.predict_classes(X_Test)
-    print(predict)
-    plot_image_label_predict(x_test_capt, y_test_label, predict, idx = 0)
-    # plt.plot(train_history.history[train])
-    # plt.plot(train_history.history[validation])
-    # plt.title('train history')
-    # plt.ylabel(train)
