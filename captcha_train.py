@@ -7,7 +7,7 @@
 @LastEditors: Raysuner
 @Email: 17775306795@163.com
 @Date: 2019-05-07 19:57:06
-@LastEditTime: 2019-05-07 20:26:24
+@LastEditTime: 2019-05-08 22:50:40
 '''
 import numpy as np
 import matplotlib.pyplot as plt
@@ -21,7 +21,8 @@ from keras.layers import Dense
 from keras.layers import Dropout
 
 class_name = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
-
+train_dir = './project/Subscribe/dataset/train/'
+test_dir = './project/Subscribe/dataset/test/'
 
 def load_data(dir_path):
     x, y = None, None
@@ -66,8 +67,7 @@ def plot_image_label_predict(captcha, label, predict, idx, num=10):
 if __name__ == '__main__':
     epoch = 10
     print('start loading data')
-    train_dir = './project/Subscribe/dataset/train/'
-    test_dir = './project/Subscribe/dataset/test/'
+    
 
     x_train_capt, y_train_label = load_data(train_dir)
     X_Train = x_train_capt.reshape(3839, 784).astype('float32')
