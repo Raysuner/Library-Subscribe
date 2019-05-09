@@ -7,7 +7,7 @@
 @LastEditors: Raysuner
 @Email: 17775306795@163.com
 @Date: 2019-05-08 22:09:14
-@LastEditTime: 2019-05-09 20:06:40
+@LastEditTime: 2019-05-09 21:22:06
 '''
 import keras
 from PIL import Image
@@ -28,18 +28,6 @@ def process(image):
     cnt = 1
     print(boxs)
     captcha_process.get_sub_img(boxs, bin_img, cnt)
-
-# def resize(train_path=my_dataset.sub_img_path):
-#     files = os.listdir(train_path)
-#     for file in files:
-#         fullpath = os.path.join(train_path, file)
-#         print(fullpath)
-#         im = Image.open(fullpath)
-#         im = im.resize((8, 48))
-#         region = im.copy()
-#         gray_img = Image.new('RGB', (28, 28), (255, 255, 255))
-#         gray_img.paste(region, (10, -5))
-#         gray_img.save(fullpath)
 
 def plot_image_label_predict(captcha, label, predict, idx, num=10):
     figure = plt.gcf()

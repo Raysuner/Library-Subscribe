@@ -7,7 +7,7 @@
 @LastEditors: Raysuner
 @Email: 17775306795@163.com
 @Date: 2019-05-07 19:57:06
-@LastEditTime: 2019-05-09 19:20:41
+@LastEditTime: 2019-05-09 20:59:40
 '''
 import numpy as np
 import matplotlib.pyplot as plt
@@ -95,4 +95,4 @@ if __name__ == '__main__':
     test_loss, test_acc = model.evaluate(X_Test_normalize, Y_Test_OneHot)
     print('Test Loss: ', test_loss)
     print('Test Accuracy: ', test_acc)
-    #model.save('./project/Subscribe/model.cy')
+    model.save('./project/Subscribe/model.cy')
