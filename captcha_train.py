@@ -7,7 +7,7 @@
 @LastEditors: Raysuner
 @Email: 17775306795@163.com
 @Date: 2019-05-07 19:57:06
-@LastEditTime: 2019-05-08 23:19:27
+@LastEditTime: 2019-05-09 19:20:41
 '''
 import numpy as np
 import matplotlib.pyplot as plt
@@ -20,9 +20,26 @@ from keras.models import Sequential
 from keras.layers import Dense
 from keras.layers import Dropout
 
+import my_dataset
+
 class_name = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
-train_dir = './project/Subscribe/dataset/train/'
-test_dir = './project/Subscribe/dataset/test/'
+
+def get_capt_and_label(image_path, i=None, x=None, y=None):
+    im = Image.open(image_path) 
+    im = im.convert('L')
+    #im = Image.fromarray(np.uint8(im))  
+    im = np.array(im)
+    im = (np.expand_dims(im, 0))
+
+    if x is None:
+        x = im
+    else:
+        x = np.vstack((x, im))
+    if y is None:
+        y = i
+    else:
+        y = np.vstack((y, i))
+    return x, y
 
 def load_data(dir_path):
     x, y = None, None
@@ -31,49 +48,19 @@ def load_data(dir_path):
         files = os.listdir(train_path)
         for file in files:
             fullpath = os.path.join(train_path, file)
-            im = Image.open(fullpath)
-            #print(fullpath)
-            im = im.convert('L')
-            im = Image.fromarray(np.uint8(im))
-            im = np.array(im)
-            im = (np.expand_dims(im, 0))
-
-            if x is None:
-                x = im
-            else:
-                x = np.vstack((x, im))
-            if y is None:
-                y = i
-            else:
-                y = np.vstack((y, i))
+            x, y = get_capt_and_label(fullpath, i, x, y)
     return x, y
-
-def plot_image_label_predict(captcha, label, predict, idx, num=10):
-    figure = plt.gcf()
-    figure.set_size_inches(12, 14)
-    if num > 20:
-        num = 20
-    for i in range(0, num):
-        ax = plt.subplot(5, 5, i + 1)
-        ax.imshow(captcha[idx], cmap='binary')
-        title = "label = " + str(predict[idx])
-        if len(predict) > 0:
-            title += ", predict = " + str(predict[idx])
-        ax.set_title(title, fontsize=10)
-        ax.set_xticks([]); ax.set_yticks([])
-        idx += 1
-    plt.show()
 
 if __name__ == '__main__':
     epoch = 10
     print('start loading data')
     
 
-    x_train_capt, y_train_label = load_data(train_dir)
+    x_train_capt, y_train_label = load_data(my_dataset.train_dir)
     X_Train = x_train_capt.reshape(3839, 784).astype('float32')
     X_Train_normalize = X_Train // 255
 
-    x_test_capt, y_test_label = load_data(test_dir)
+    x_test_capt, y_test_label = load_data(my_dataset.test_dir)
     X_Test = x_test_capt.reshape(1495, 784).astype('float32')
     X_Test_normalize = X_Test // 255
 
@@ -108,4 +95,4 @@ if __name__ == '__main__':
     test_loss, test_acc = model.evaluate(X_Test_normalize, Y_Test_OneHot)
     print('Test Loss: ', test_loss)
     print('Test Accuracy: ', test_acc)
-    model.save('./project/Subscribe/model.cy')
+    #model.save('./project/Subscribe/model.cy')

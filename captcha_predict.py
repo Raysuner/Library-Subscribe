@@ -7,14 +7,73 @@
 @LastEditors: Raysuner
 @Email: 17775306795@163.com
 @Date: 2019-05-08 22:09:14
-@LastEditTime: 2019-05-08 22:55:04
+@LastEditTime: 2019-05-09 20:06:40
 '''
 import keras
-import captcha_train
+from PIL import Image
+import os
+import matplotlib.pyplot as plt
+import numpy as np
 
-model_path = './project/Subscribe/model.cy'
-model = keras.models.load_model(model_path)
-test_capt, test_label = captcha_train.load_data(captcha_train.test_dir)
-X_Test = test_capt.reshape(1495, 784).astype('float32')
-predict = model.predict_classes(X_Test)
-captcha_train.plot_image_label_predict(test_capt, test_label, predict, idx=450)
+import captcha_process
+import captcha_train
+import my_dataset
+import captcha_resize
+
+
+def process(image):
+    gray_img = captcha_process.rgb2gray(image)
+    bin_img = captcha_process.binarizing(gray_img)
+    boxs = captcha_process.vertical(bin_img)
+    cnt = 1
+    print(boxs)
+    captcha_process.get_sub_img(boxs, bin_img, cnt)
+
+# def resize(train_path=my_dataset.sub_img_path):
+#     files = os.listdir(train_path)
+#     for file in files:
+#         fullpath = os.path.join(train_path, file)
+#         print(fullpath)
+#         im = Image.open(fullpath)
+#         im = im.resize((8, 48))
+#         region = im.copy()
+#         gray_img = Image.new('RGB', (28, 28), (255, 255, 255))
+#         gray_img.paste(region, (10, -5))
+#         gray_img.save(fullpath)
+
+def plot_image_label_predict(captcha, label, predict, idx, num=10):
+    figure = plt.gcf()
+    figure.set_size_inches(12, 14)
+    if num > 20:
+        num = 20
+    for i in range(0, num):
+        ax = plt.subplot(5, 5, i + 1)
+        ax.imshow(captcha[idx], cmap='binary')
+        title = "label = " + str(predict[idx])
+        if len(predict) > 0:
+            title += ", predict = " + str(predict[idx])
+        ax.set_title(title, fontsize=10)
+        ax.set_xticks([]); ax.set_yticks([])
+        idx += 1
+    plt.show()
+
+def main():
+    model = keras.models.load_model(my_dataset.model_path)
+    image = Image.open(my_dataset.verify_path)
+    process(image)
+    captcha_resize.resize(my_dataset.sub_img_dir)
+    x, y = None, None
+    for i in range(1, 5):
+        fullpath = my_dataset.sub_img_dir + str(i) + '.png'
+        x, y = captcha_train.get_capt_and_label(fullpath, i, x, y)
+    test_capt, test_label = x, y
+    X_Test = test_capt.reshape(4, 784).astype('float32') // 255
+    predict = model.predict_classes(X_Test)
+    print(predict)
+    #plot_image_label_predict(test_capt, test_label, predict, 0, 4)
+    verify = str(predict[0]) + str(predict[1]) + str(predict[2]) + str(predict[3])
+    print(verify)
+    return verify
+
+if __name__ == '__main__':
+    main()
