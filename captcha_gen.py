@@ -7,7 +7,7 @@
 @LastEditors: Raysuner
 @Email: 17775306795@163.com
 @Date: 2019-05-04 22:07:01
-@LastEditTime: 2019-05-09 21:03:00
+@LastEditTime: 2019-05-11 16:38:42
 '''
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -19,9 +19,8 @@ import my_dataset
 
 def init():
     driver = webdriver.Firefox()
-    local_time =datetime.datetime.now()
-    day_time = str(local_time.year) + '-' + str(local_time.month) + '-' + str(local_time.day + 1)
-    login_url = 'http://219.231.8.121/Home/Web/area?area=7&segment=' + '15125' + '&day=' + day_time + '&startTime=07:00&endTime=22:00'
+    driver.set_window_size(960, 1080)
+    login_url = my_dataset.get_login_url()
     print(login_url)
     driver.get(login_url)
     time.sleep(2)
@@ -32,7 +31,7 @@ def init():
 def save(driver):
     driver.get_screenshot_as_file(my_dataset.screen_path)
     img = Image.open(my_dataset.screen_path)
-    box = (659, 380, 738, 428)
+    box = (502, 407, 579, 452)
     image = img.crop(box)
     image.save(my_dataset.verify_path)
     #shutdown()
