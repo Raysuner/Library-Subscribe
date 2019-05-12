@@ -7,7 +7,7 @@
 @LastEditors: Raysuner
 @Email: 17775306795@163.com
 @Date: 2019-05-08 22:09:14
-@LastEditTime: 2019-05-09 21:22:06
+@LastEditTime: 2019-05-12 11:44:23
 '''
 import keras
 from PIL import Image
@@ -60,8 +60,7 @@ def main():
     print(predict)
     #plot_image_label_predict(test_capt, test_label, predict, 0, 4)
     verify = str(predict[0]) + str(predict[1]) + str(predict[2]) + str(predict[3])
-    print(verify)
     return verify
 
 if __name__ == '__main__':
-    main()
+    print(main())
