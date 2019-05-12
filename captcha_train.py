@@ -7,18 +7,19 @@
 @LastEditors: Raysuner
 @Email: 17775306795@163.com
 @Date: 2019-05-07 19:57:06
-@LastEditTime: 2019-05-09 20:59:40
+@LastEditTime: 2019-05-12 11:05:01
 '''
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.image as matimg
 from PIL import Image
-import os
 from keras.utils import np_utils
 import tensorflow as tf
 from keras.models import Sequential
 from keras.layers import Dense
 from keras.layers import Dropout
+import pandas as pd
+import os
 
 import my_dataset
 
@@ -95,4 +96,9 @@ if __name__ == '__main__':
     test_loss, test_acc = model.evaluate(X_Test_normalize, Y_Test_OneHot)
     print('Test Loss: ', test_loss)
     print('Test Accuracy: ', test_acc)
-    model.save('./project/Subscribe/model.cy')
+    model.save(my_dataset.model_path)
+    prediction = model.predict_classes(X_Test)
+    test_label_arr = np.array(y_test_label)
+    y_test_label = np.reshape(test_label_arr, 1495)
+    crosstable = pd.crosstab(y_test_label, prediction, rownames=['label'], colnames=['predict'])
+    print(crosstable)
