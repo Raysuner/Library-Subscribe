@@ -7,7 +7,7 @@
 @LastEditors: Raysuner
 @Email: 17775306795@163.com
 @Date: 2019-04-17 21:55:08
-@LastEditTime: 2019-05-11 16:47:41
+@LastEditTime: 2019-05-12 11:43:52
 '''
 
 from selenium import webdriver
@@ -16,6 +16,12 @@ import time
 import os
 from PIL import Image
 import keras
+
+from email.mime.text import MIMEText
+from email import encoders
+from email.header import Header
+from email.utils import parseaddr, formataddr
+import smtplib
 
 import captcha_predict
 from captcha_gen import save
@@ -34,19 +40,18 @@ class Subscribe:
         self.elem_verify = self.driver.find_element_by_name('verify')
         self.elem_pwd = self.driver.find_element_by_name('password')
         self.element = self.driver.find_element_by_id('checkpic')
-        self.confirm1 = self.driver.find_element_by_class_name('ui-dialog-autofocus')
+        self.confirm = self.driver.find_element_by_class_name('ui-dialog-autofocus')
+        self.success = False
 
-        self.verify = ''               
-        self.email = '17775306795@163.com'
-    
     def get_verify(self):
         self.verify = captcha_predict.main()
+        print(self.verify)
 
     def push(self):
         self.elem_user.send_keys("15205150438")
         self.elem_pwd.send_keys("227278")
         self.elem_verify.send_keys(self.verify)
-        self.confirm1.click()
+        self.confirm.click()
         time.sleep(5)
         
 
@@ -68,17 +73,40 @@ class Subscribe:
         print('44444\n')
         confirm4 = self.driver.find_element_by_class_name('ui-dialog-autofocus')
         confirm4.click()
-        time.sleep(20)
-        
+        self.success = True
+        time.sleep(10)
+    
+    def format_addr(self, str):
+        name, addr = parseaddr(str)
+        return formataddr((Header(name, 'utf-8').encode(), addr))
+
+    def send_email(self):  
+        from_addr = '1669232805@qq.com'
+        password = 'lkccrpaitcnobabi'
+        to_addr = '17775306795@163.com'
+        smtp_server = 'smtp.qq.com'
+        msg1 = MIMEText('订阅成功', 'plain', 'utf-8')
+        msg2 = MIMEText('订阅失败', 'plain', 'utf-8')
+        if self.success is True:
+            msg = msg1
+        else:
+            msg = msg2
+        msg['From'] = self.format_addr('python爱好者 <%s>' % from_addr)
+        msg['To'] = self.format_addr('管理员 <%s>' % to_addr)
+        msg['Subject'] = Header('来自SMTP的问候……', 'utf-8').encode()
+
+        server = smtplib.SMTP(smtp_server, 25)
+        server.set_debuglevel(1)
+        server.login(from_addr, password)
+        server.sendmail(from_addr, [to_addr], msg.as_string())
+        server.quit()
+
     def main(self):
         save(self.driver)
         self.get_verify()
         self.push()
-        self.select()
-        
-
-    #def send_email(self):               
-
+        self.select()             
+        self.send_email()
 
 if __name__ == '__main__':
     Subscribe().main()
