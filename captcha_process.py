@@ -54,7 +54,7 @@ def vertical(img):
             l = i
             flag = True
         if flag and count == 0:
-            r = i - 1
+            r = i
             flag = False
             boxs.append((l,r))
     return boxs
