@@ -38,10 +38,12 @@ def save(driver):
 
 def main():
     driver = init()
-    save(driver)           
+    save(driver)   
+    driver.quit()        
 
 if __name__ == '__main__':
-    main()
+    for i in range(1, 1001):
+        main()
 
 
 
