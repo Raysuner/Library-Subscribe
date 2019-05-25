@@ -7,7 +7,7 @@
 @LastEditors: Raysuner
 @Email: 17775306795@163.com
 @Date: 2019-05-07 20:16:06
-@LastEditTime: 2019-05-09 20:01:44
+@LastEditTime: 2019-05-25 17:13:13
 '''
 import os
 from PIL import Image
@@ -48,25 +48,24 @@ def vertical(img):
     l,r = 0,0
     flag = False
     boxs = []
+    cnt = 0
     for i,count in enumerate(capt_list):
-        # 阈值这里为0
         if flag is False and count > 0:
             l = i
             flag = True
         if flag and count == 0:
-            r = i
+            r = i - 1
             flag = False
-            boxs.append((l,r))
+            boxs.append((l, r))
     return boxs
 
-def get_sub_img(boxs, bin_img, cnt):
+def get_sub_img(boxs, image, cnt):
     for subbox in boxs:
         subbox = (subbox[0], 0, subbox[1], 48)
-        img = bin_img.crop(subbox)
+        img = image.crop(subbox)
         width = img.size[0] 
-        if width >= 15:
-            mid = img.size[0] // 2 + 1
-            print('mid = %d' % mid)
+        if width >= 14:
+            mid = width // 2 + 1
             img1 = img.crop((0, 0, mid, 48))
             img1.save(my_dataset.sub_img_dir + str(cnt) + '.png')
             cnt += 1
@@ -76,18 +75,21 @@ def get_sub_img(boxs, bin_img, cnt):
         else:
             img.save(my_dataset.sub_img_dir + str(cnt) + '.png')
             cnt += 1
+            
+    return cnt
 
-def capt_process(captcha_dir, train_dir):
+def capt_process(captcha_dir):
     cnt = 1
     files = os.listdir(captcha_dir)
     for file in files:
         captcha_path = captcha_dir + file
+        print(captcha_path)
         image = Image.open(captcha_path)
         gray_img = rgb2gray(image)
         bin_img = binarizing(gray_img)
         boxs = vertical(bin_img)
-        get_sub_img(boxs, bin_img, cnt)
+        cnt = get_sub_img(boxs, image, cnt)
     
 
 if __name__ == '__main__':
-    capt_process(my_dataset.captcha_dir, my_dataset.train_dir)
+    capt_process(my_dataset.captcha_dir)

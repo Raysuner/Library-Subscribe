@@ -7,7 +7,7 @@
 @LastEditors: Raysuner
 @Email: 17775306795@163.com
 @Date: 2019-05-07 19:57:06
-@LastEditTime: 2019-05-12 11:05:01
+@LastEditTime: 2019-05-25 18:09:32
 '''
 import numpy as np
 import matplotlib.pyplot as plt
@@ -24,6 +24,11 @@ import os
 import my_dataset
 
 class_name = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+
+"""
+images = []
+label = []
+"""
 
 def get_capt_and_label(image_path, i=None, x=None, y=None):
     im = Image.open(image_path) 
@@ -52,17 +57,39 @@ def load_data(dir_path):
             x, y = get_capt_and_label(fullpath, i, x, y)
     return x, y
 
+""" 另一种的加载函数
+def my_get_capt_and_label(fullpath, i):
+    arr_label = []
+    im = Image.open(fullpath)
+    gray_im = im.convert('L')
+    arr_image = np.array(gray_im)
+    images.append(arr_image)
+    arr_label.append(int(class_name[i]))
+    label.append(arr_label)
+
+def my_load_data(dir_path):
+    for i in range(len(class_name)):
+        train_path = dir_path + class_name[i]
+        files = os.listdir(train_path)
+        for file in files:
+            fullpath = os.path.join(train_path, file)
+            my_get_capt_and_label(fullpath, i)
+    x = np.array(images)
+    y = np.array(label)
+    return x, y
+"""
+
 if __name__ == '__main__':
     epoch = 10
     print('start loading data')
     
 
     x_train_capt, y_train_label = load_data(my_dataset.train_dir)
-    X_Train = x_train_capt.reshape(3839, 784).astype('float32')
+    X_Train = x_train_capt.reshape(10006, 784).astype('float32')
     X_Train_normalize = X_Train // 255
 
     x_test_capt, y_test_label = load_data(my_dataset.test_dir)
-    X_Test = x_test_capt.reshape(1495, 784).astype('float32')
+    X_Test = x_test_capt.reshape(2000, 784).astype('float32')
     X_Test_normalize = X_Test // 255
 
     Y_Train_OneHot = np_utils.to_categorical(y_train_label)
@@ -77,7 +104,15 @@ if __name__ == '__main__':
         activation='relu'
     ))
 
-    #model.add(Dropout(0.5))
+    #model.add(Dropout(0.3))
+
+    # model.add(Dense(
+    #     units=1024,
+    #     kernel_initializer='normal',
+    #     activation='relu'
+    #     ))
+    
+    model.add(Dropout(0.2))
 
     model.add(Dense(
         units=10,
@@ -99,6 +134,8 @@ if __name__ == '__main__':
     model.save(my_dataset.model_path)
     prediction = model.predict_classes(X_Test)
     test_label_arr = np.array(y_test_label)
-    y_test_label = np.reshape(test_label_arr, 1495)
+    y_test_label = np.reshape(test_label_arr, 2000)
     crosstable = pd.crosstab(y_test_label, prediction, rownames=['label'], colnames=['predict'])
     print(crosstable)
+    #df = pd.DataFrame({'label': y_test_label, 'predict': prediction})
+    #print(df[(df.label == 9) & (df.predict == 5)])

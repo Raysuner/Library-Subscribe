@@ -7,7 +7,7 @@
 @LastEditors: Raysuner
 @Email: 17775306795@163.com
 @Date: 2019-04-17 21:55:08
-@LastEditTime: 2019-05-12 11:43:52
+@LastEditTime: 2019-05-25 18:16:02
 '''
 
 from selenium import webdriver
@@ -57,22 +57,17 @@ class Subscribe:
 
     def select(self):
         confirm1 = self.driver.find_element_by_xpath('/html/body/div[4]/div/table/tbody/tr[3]/td/div[2]/button') ###预约规则确定键
-        print('11111\n')
-        time.sleep(2)
-        confirm1.click()
-        number = self.driver.find_element_by_xpath('/html/body/div[2]/ul/li[36]')  #座位位置
-        print('22222\n')
-        time.sleep(2)
-        number.click()
-        confirm2 = self.driver.find_element_by_xpath('/html/body/div[4]/div/table/tbody/tr[3]/td/div[2]/button[2]')#座位位置确定键
-        time.sleep(2)
-        print('33333\n')
+        confirm1.send_keys(Keys.ENTER)
+
+        number = self.driver.find_element_by_xpath('/html/body/div[2]/ul/li[94]')  #座位位置
+        number.send_keys(Keys.ENTER)
+
         confirm3 = self.driver.find_element_by_class_name('ui-dialog-autofocus')
-        confirm3.click()
-        time.sleep(2)
-        print('44444\n')
+        confirm3.send_keys(Keys.ENTER)
+
         confirm4 = self.driver.find_element_by_class_name('ui-dialog-autofocus')
         confirm4.click()
+        
         self.success = True
         time.sleep(10)
     
@@ -105,8 +100,8 @@ class Subscribe:
         save(self.driver)
         self.get_verify()
         self.push()
-        self.select()             
-        self.send_email()
+        # self.select()             
+        # self.send_email()
 
 if __name__ == '__main__':
     Subscribe().main()

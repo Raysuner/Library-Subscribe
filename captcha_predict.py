@@ -7,7 +7,7 @@
 @LastEditors: Raysuner
 @Email: 17775306795@163.com
 @Date: 2019-05-08 22:09:14
-@LastEditTime: 2019-05-12 11:44:23
+@LastEditTime: 2019-05-25 18:14:48
 '''
 import keras
 from PIL import Image
@@ -57,7 +57,6 @@ def main():
     test_capt, test_label = x, y
     X_Test = test_capt.reshape(4, 784).astype('float32') // 255
     predict = model.predict_classes(X_Test)
-    print(predict)
     #plot_image_label_predict(test_capt, test_label, predict, 0, 4)
     verify = str(predict[0]) + str(predict[1]) + str(predict[2]) + str(predict[3])
     return verify
